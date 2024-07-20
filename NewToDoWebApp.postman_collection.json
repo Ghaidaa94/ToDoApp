@@ -1,0 +1,381 @@
+{
+	"info": {
+		"_postman_id": "c3531e2b-565e-4348-8c38-b26014ca5c22",
+		"name": "NewToDoWebApp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "36548464"
+	},
+	"item": [
+		{
+			"name": "SignUpToWebApp",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"check for matching FirstName\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    const first= pm.environment.get(\"RandomName\")\r",
+							"    pm.expect(jsonData.RandomName).to.eql(first);\r",
+							"    const token =jsonData.access_token\r",
+							"    pm.environment.set(\"Token\",token);\r",
+							"});\r",
+							"pm.test(\"check for matching email\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    const email= pm.environment.get(\"RandomEmail\")\r",
+							"    pm.expect(jsonData.RandomE).to.eql(email);\r",
+							"});\r",
+							"// I identified RandomeFirstName & RandomEmail at the pre-request \r",
+							"\r",
+							"\r",
+							"\r",
+							"pm.test(\"Body matches string with firstName\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"firstName\");\r",
+							"});\r",
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+							"});\r",
+							"pm.test(\"Status code name has string\", function () {\r",
+							"    pm.response.to.have.status(\"Created\");\r",
+							"});\r",
+							"pm.test(\"Content-Type is present\", function () {\r",
+							"    pm.response.to.have.header(\"Reporting-Endpoints\");\r",
+							"    pm.response.to.have.header(\"Content-Length\");\r",
+							"    pm.response.to.have.header(\"Connection\");\r",
+							"    pm.response.to.have.header(\"Set-Cookie\");\r",
+							"    pm.response.to.have.header(\"Content-Type\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const RandomName = pm.variables.replaceIn('{{$randomFirstName}}')\r",
+							"pm.environment.set(\"AnyName\", RandomName); \r",
+							"\r",
+							"const email = pm.variables.replaceIn('{{$randomEmail}}')\r",
+							"pm.environment.set(\"RandomE\", email);\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"{{$randomEmail}}\",\r\n    \"password\": \"Pass@123\",\r\n    \"firstName\": \"{{AnyName}}\",\r\n    \"lastName\": \"Musas\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://todo.qacart.com/api/v1/users/register",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"qacart",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CheckTask",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Verify the name of record\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.item).to.eql(\"Only Test\");\r",
+							"    const TaskID= jsonData._id\r",
+							"    pm.environment.set(\"TaskID\", TaskID);\r",
+							"});\r",
+							"pm.test(\"Verify the Status of record is not complete\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.isCompleted).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Successful POST request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r",
+							"});\r",
+							"pm.test(\"Status code name has string\", function () {\r",
+							"    pm.response.to.have.status(\"Created\");\r",
+							"});\r",
+							"pm.test(\"Body matches many strings\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"isCompleted\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"_id\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"item\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"userID\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"createdAt\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"packages": {},
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"item\": \"Only Test\",\r\n    \"isCompleted\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://todo.qacart.com/api/v1/tasks",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"qacart",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CompleteTask",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Successful PUT request\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([201, 200]);\r",
+							"});\r",
+							"pm.test(\"Check Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Keep Task\");\r",
+							"});\r",
+							"pm.test(\"Content-Type is present\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\");\r",
+							"});\r",
+							"pm.test(\"Verify the TO DO record marked as comepleted\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.isCompleted).to.eql(true);\r",
+							"});\r",
+							"pm.test(\"Verify the TO DO record Had _id\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData._id).to.eql(\"669b7fc970c93b00143aac7d\");\r",
+							"});\r",
+							"pm.test(\"Status code name is OK\", function () {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"});\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"isCompleted\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"_id\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"item\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"userID\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"createdAt\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"item\": \"Keep Task\",\r\n    \"isCompleted\": true\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://todo.qacart.com/api/v1/tasks/{{TaskID}}",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"qacart",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks",
+						"{{TaskID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetData",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"tasks\");\r",
+							"});\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"pm.test(\"Status code name is OK\", function () {\r",
+							"    pm.response.to.have.status(\"OK\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://todo.qacart.com/api/v1/tasks",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"qacart",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteRecord",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"pm.test(\"Body matches true as completed task\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"true\");\r",
+							"});\r",
+							"pm.test(\"Content-Type is present\", function () {\r",
+							"    pm.response.to.have.header(\"Reporting-Endpoints\");\r",
+							"    pm.response.to.have.header(\"Content-Type\");\r",
+							"    pm.response.to.have.header(\"Content-Length\");\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Check response size\", function () {\r",
+							"    pm.expect(pm.response.size).to.be.lessThan(1000);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{Token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://todo.qacart.com/api/v1/tasks/{{TaskID}}",
+					"protocol": "https",
+					"host": [
+						"todo",
+						"qacart",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"tasks",
+						"{{TaskID}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
